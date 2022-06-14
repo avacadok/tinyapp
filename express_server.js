@@ -7,6 +7,7 @@ app.set("view engine", "ejs");
 
 const bodyParser = require("body-parser");
 const { response } = require("express");
+const { del } = require("request");
 app.use(bodyParser.urlencoded({extended: true}));
 
 //--------ROUTES---------------
@@ -49,9 +50,17 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const templateVars = { shortURL: req.params.shortURL, longURL: req.params.longURL};
+  const templateVars = {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL]
+  };
   console.log("template", templateVars);
   res.render("urls_show", templateVars);
+});
+
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls");
 });
 
 app.get("/urls.json", (req, res) => {
