@@ -16,10 +16,6 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
-
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   //para1 will be the ejs file inside the string, para2 has to be an obejct
@@ -42,6 +38,14 @@ app.post("/urls", (req, res) => {
   // Respond with 'Ok' (we will replace this)
 });
 
+app.get("/urls/:shortURL", (req, res) => {
+  const templateVars = {
+    shortURL: req.params.shortURL,
+    longURL: urlDatabase[req.params.shortURL]
+  };
+  res.render("urls_show", templateVars);
+});
+
 app.get("/u/:shortURL", (req, res) => {
   //match the longURL with the shortURL on the urlDatabase
   const longURL = urlDatabase[req.params.shortURL];
@@ -49,17 +53,24 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(`${longURL}`);
 });
 
-app.get("/urls/:shortURL", (req, res) => {
+app.post("/urls/:shortURL/delete", (req, res) => {
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls");
+});
+
+app.get("url/:shortURL/edit", (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL]
   };
-  console.log("template", templateVars);
   res.render("urls_show", templateVars);
 });
 
-app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
+app.post("/urls/:shortURL/edit", (req, res) => {
+  let shortURL = req.params.shortURL;
+  console.log(shortURL);
+  urlDatabase[shortURL] = req.body.longURL;
+  
   res.redirect("/urls");
 });
 
