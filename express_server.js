@@ -4,18 +4,6 @@ const PORT = 8080; // default port 8080
 
 app.set("view engine", "ejs");
 
-function generateRandomString() {
-  var randomStr = 'abcdefghijklmnopqrstuvwxyz0123456789';
-  var output = ""
-  var numLength = randomStr.length;
-
-  for ( var i = 0; i < 6 ; i++ ) {
-    output += randomStr.charAt(Math.floor(Math.random() * numLength));
-  }
-  return output;
-
-};
-
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -75,10 +63,12 @@ app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-
 function generateRandomString() {
-  let randomNum = Math.random().toString(36).slice(7);
-  return randomNum;
-}
+  let output = "";
+  const randomStr = "abcdefghijklmnopqrstuvwxyz0123456789";
 
-console.log(generateRandomString())
+  for (let i = 0; i < 6; i++) {
+    output += randomStr.charAt(Math.floor(Math.random() * randomStr.length));
+  }
+  return output;
+}
