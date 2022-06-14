@@ -40,6 +40,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
+  //match the longURL with the shortURL on the urlDatabase
   const longURL = urlDatabase[req.params.shortURL];
   // console.log("longurl",longURL)
   res.redirect(`${longURL}`);
