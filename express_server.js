@@ -2,8 +2,14 @@ const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
 
+//--------MIDDLEWARE-----------
 app.set("view engine", "ejs");
 
+const bodyParser = require("body-parser");
+const { response } = require("express");
+app.use(bodyParser.urlencoded({extended: true}));
+
+//--------ROUTES---------------
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
@@ -15,17 +21,13 @@ app.get("/", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
+  //para1 will be the ejs file inside the string, para2 has to be an obejct
   res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
-
-//middleware
-const bodyParser = require("body-parser");
-const { response } = require("express");
-app.use(bodyParser.urlencoded({extended: true}));
 
 app.post("/urls", (req, res) => {
   // Log the POST request body to the console
