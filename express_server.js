@@ -9,9 +9,18 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+app.get("/", (req, res) => {
+  res.send("Hello!");
+});
+
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  const longURL = req.params.shortURL;
+  res.redirect(longURL);
 });
 
 app.get("/urls/new", (req, res) => {
@@ -20,11 +29,19 @@ app.get("/urls/new", (req, res) => {
 
 //middleware
 const bodyParser = require("body-parser");
+const { response } = require("express");
 app.use(bodyParser.urlencoded({extended: true}));
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  // Log the POST request body to the console
+  console.log(req.body.longURL);
+  let shortURL = generateRandomString();
+  //assign the new key-value pair;
+  urlDatabase[shortURL] = req.body.longURL;
+  console.log(urlDatabase);
+  res.redirect(`urls/${shortURL}`);
+  //res.send("Ok");
+  // Respond with 'Ok' (we will replace this)
 });
 
 app.get("/urls/:shortURL", (req, res) => {
@@ -33,9 +50,7 @@ app.get("/urls/:shortURL", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
-});
+
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
@@ -50,14 +65,6 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
-app.get("/set", (req, res) => {
-  const a = 1;
-  res.send(`a = ${a}`);
-});
-//a is not accessible in the other function/callback. The user will NOT see a set to 1 in /fetch.
-app.get("/fetch", (req, res) => {
-  res.send(`a = ${a}`);
-});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
