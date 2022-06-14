@@ -16,9 +16,9 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = { shortURL: req.params.shortURL, longURL: req.params.longURL};
-  console.log("template", templateVars)
+  console.log("template", templateVars);
   res.render("urls_show", templateVars);
-})
+});
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -40,11 +40,11 @@ app.get("/hello", (req, res) => {
 app.get("/set", (req, res) => {
   const a = 1;
   res.send(`a = ${a}`);
- });
- //a is not accessible in the other function/callback. The user will NOT see a set to 1 in /fetch.
- app.get("/fetch", (req, res) => {
+});
+//a is not accessible in the other function/callback. The user will NOT see a set to 1 in /fetch.
+app.get("/fetch", (req, res) => {
   res.send(`a = ${a}`);
- });
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
