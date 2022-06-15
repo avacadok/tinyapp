@@ -19,19 +19,32 @@ const urlDatabase = {
 };
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase };
+  const templateVars = { 
+    urls: urlDatabase,
+    username: req.cookies["username"]
+  };
   //para1 will be the ejs file inside the string, para2 has to be an obejct
   res.render("urls_index", templateVars);
 });
 
 app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
+  let username = req.body.username
+  res.cookie("username", username);
   res.redirect("/urls");
   // console.log("user",req.body)
 });
 
+app.post("/logout", (req, res) => {
+  res.clearCookie("username")
+  res.redirect("/urls");
+});
+
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const templateVars = { 
+    urls: urlDatabase,
+    username: req.cookies["username"]
+  };
+  res.render("urls_new", templateVars);
 });
 
 app.post("/urls", (req, res) => {
@@ -49,7 +62,8 @@ app.post("/urls", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL]
+    longURL: urlDatabase[req.params.shortURL],
+    username: req.cookies["username"]
   };
   res.render("urls_show", templateVars);
 });
@@ -69,7 +83,8 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 app.get("url/:shortURL/edit", (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL]
+    longURL: urlDatabase[req.params.shortURL],
+    username: req.cookies["username"]
   };
   res.render("urls_show", templateVars);
 });
@@ -87,7 +102,10 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/hello", (req, res) => {
-  const templateVars = { greeting: 'Hello World!' };
+  const templateVars = { 
+    greeting: 'Hello World!',
+    username: req.cookies["username"]
+   };
   res.render("hello_world", templateVars);
 });
 
@@ -108,4 +126,5 @@ function generateRandomString() {
     output += randomStr.charAt(Math.floor(Math.random() * randomStr.length));
   }
   return output;
-}
+};
+
