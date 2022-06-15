@@ -18,38 +18,83 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
+//--------USER INFORMATION------
+const users = {
+  "Snowie": {
+    id: "Snowie",
+    email: "snowie@gmail.com",
+    password: "ilovemymama"
+  },
+  "Brandon": {
+    id: "Brandon",
+    email: "brando@gmail.com",
+    password: "520ava1314"
+  }
+};
+
+let getUserFromEmail = function(email) {
+  for (let userId in users) {
+    let user = users[userId];
+    if (email === user.email) {
+      return user;
+    }
+  } return null;
+};
+
+//--------HOME PAGE-------------
 app.get("/urls", (req, res) => {
-  const templateVars = { 
+  const templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"]
+    user: users[req.cookies["user_id"]]
   };
   //para1 will be the ejs file inside the string, para2 has to be an obejct
   res.render("urls_index", templateVars);
 });
 
+//--------REGISTRATION--------------
 app.get("/register", (req, res) => {
-  const templateVars = { 
-    username: req.cookies["username"]
+  const templateVars = {
+    user: users[req.cookies["user_id"]]
+    // username: req.cookies["username"]
   };
-  res.render("register", templateVars)
+  res.render("register", templateVars);
+});
+
+
+//--------REGISTRATION END-POINT------
+app.post("/register", (req, res) => {
+  const newId = generateRandomString();
+  const newUser = req.body.email;
+  const newPassword = req.body.password;
+
+  users[newId] = {
+    id: newId,
+    email: newUser,
+    password: newPassword
+  };
+  console.log("users", users);
+  res.cookie("user_id", newId);
+  res.redirect("/urls");
 });
 
 app.post("/login", (req, res) => {
-  let username = req.body.username
-  res.cookie("username", username);
+  let email = req.body.username;
+  let userId = getUserFromEmail(email).id;
+  res.cookie("user_id", userId);
   res.redirect("/urls");
   // console.log("user",req.body)
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username")
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
 app.get("/urls/new", (req, res) => {
-  const templateVars = { 
+  const templateVars = {
     urls: urlDatabase,
-    username: req.cookies["username"]
+    user: users[req.cookies["user_id"]]
+    // username: req.cookies["username"]
   };
   res.render("urls_new", templateVars);
 });
@@ -70,7 +115,8 @@ app.get("/urls/:shortURL", (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    username: req.cookies["username"]
+    user: users[req.cookies["user_id"]]
+    //username: req.cookies["username"]
   };
   res.render("urls_show", templateVars);
 });
@@ -97,10 +143,11 @@ app.get("/urls/:shortURL/edit", (req, res) => {
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    username: req.cookies["username"]
+    user: users[req.cookies["user_id"]]
+    // username: req.cookies["username"]
   };
   res.render("urls_show", templateVars);
-})
+});
 
 
 app.get("/urls.json", (req, res) => {
@@ -108,10 +155,11 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/hello", (req, res) => {
-  const templateVars = { 
+  const templateVars = {
     greeting: 'Hello World!',
-    username: req.cookies["username"]
-   };
+    user: users[req.cookies["user_id"]]
+    // username: req.cookies["username"]
+  };
   res.render("hello_world", templateVars);
 });
 
@@ -132,5 +180,5 @@ function generateRandomString() {
     output += randomStr.charAt(Math.floor(Math.random() * randomStr.length));
   }
   return output;
-};
+}
 
