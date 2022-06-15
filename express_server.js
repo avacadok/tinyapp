@@ -27,14 +27,13 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
-//-------add login(show name when logged in)
 app.post("/login", (req, res) => {
   let username = req.body.username
   res.cookie("username", username);
   res.redirect("/urls");
   // console.log("user",req.body)
 });
-//-------add logout
+
 app.post("/logout", (req, res) => {
   res.clearCookie("username")
   res.redirect("/urls");

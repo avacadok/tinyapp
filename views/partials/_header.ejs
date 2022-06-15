@@ -1,3 +1,6 @@
+
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,7 +27,7 @@
         
         <% if (!username){ %>
           <form method="POST" action="/login">  
-            <input type="username" placeholder="username">
+            <input type="username" name="username" placeholder="username">
             <button class="btn btn-outline-dark" type="submit">Login</button>
           </form>  
           <% } else{ %>
