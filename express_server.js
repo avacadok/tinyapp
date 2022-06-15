@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; // default port 8080
+const cookieParser = require("cookie-parser");
 
 //--------MIDDLEWARE-----------
 app.set("view engine", "ejs");
@@ -9,6 +10,7 @@ const bodyParser = require("body-parser");
 const { response } = require("express");
 const { del } = require("request");
 app.use(bodyParser.urlencoded({extended: true}));
+app.use(cookieParser());
 
 //--------ROUTES---------------
 const urlDatabase = {
@@ -20,6 +22,12 @@ app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase };
   //para1 will be the ejs file inside the string, para2 has to be an obejct
   res.render("urls_index", templateVars);
+});
+
+app.post("/login", (req, res) => {
+  res.cookie("username", req.body.username);
+  res.redirect("/urls");
+  // console.log("user",req.body)
 });
 
 app.get("/urls/new", (req, res) => {
@@ -70,7 +78,7 @@ app.post("/urls/:shortURL/edit", (req, res) => {
   let shortURL = req.params.shortURL;
   console.log(shortURL);
   urlDatabase[shortURL] = req.body.longURL;
-  
+  console.log("body",body);
   res.redirect("/urls");
 });
 
