@@ -80,20 +80,17 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 });
 
+//---------------------------need to fix this part--------------------------------
 app.get("url/:shortURL/edit", (req, res) => {
-  const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
-    username: req.cookies["username"]
-  };
-  res.render("urls_show", templateVars);
+  let shortURL = req.params.shortURL;
+  console.log(shortURL);
+  urlDatabase[shortURL] = req.body.longURL;
+  res.redirect("/urls");
 });
 
 app.post("/urls/:shortURL/edit", (req, res) => {
   let shortURL = req.params.shortURL;
-  console.log(shortURL);
   urlDatabase[shortURL] = req.body.longURL;
-  console.log("body",body);
   res.redirect("/urls");
 });
 
