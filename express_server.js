@@ -64,17 +64,33 @@ app.get("/register", (req, res) => {
 //--------REGISTRATION END-POINT------
 app.post("/register", (req, res) => {
   const newId = generateRandomString();
-  const newUser = req.body.email;
+  const newEmail = req.body.email;
   const newPassword = req.body.password;
+  console.log("newemail", newEmail);
+
+  for (let userId in users) {
+    console.log("user", users[userId].email);
+    if (users[userId].email === newEmail) {
+      res.status(400).send('Email is already taken, please login with your email.');
+      return;
+    }
+  }
+
+  if (newPassword === "" || newEmail === "") {
+    res.status(400).send("Please enter valid email and password");
+    return;
+  }
 
   users[newId] = {
     id: newId,
-    email: newUser,
+    email: newEmail,
     password: newPassword
   };
-  console.log("users", users);
+  console.log(users);
   res.cookie("user_id", newId);
   res.redirect("/urls");
+  console.log("users", users);
+  
 });
 
 app.post("/login", (req, res) => {
