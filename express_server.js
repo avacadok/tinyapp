@@ -35,6 +35,7 @@ const users = {
 let getUserFromEmail = function(email) {
   for (let userId in users) {
     let user = users[userId];
+    console.log("user", user);
     if (email === user.email) {
       return user;
     }
@@ -43,18 +44,22 @@ let getUserFromEmail = function(email) {
 
 //--------HOME PAGE-------------
 app.get("/urls", (req, res) => {
+  const userObject = getUserFromEmail(req.cookies["user_id"]);
   const templateVars = {
     urls: urlDatabase,
-    user: users[req.cookies["user_id"]]
+    user: userObject
   };
+  console.log(templateVars);
+  console.log(req.cookies);
   //para1 will be the ejs file inside the string, para2 has to be an obejct
   res.render("urls_index", templateVars);
 });
 
 //--------REGISTRATION--------------
 app.get("/register", (req, res) => {
+  const userObject = getUserFromEmail(req.cookies["user_id"]);
   const templateVars = {
-    user: users[req.cookies["user_id"]]
+    user: userObject
     // username: req.cookies["username"]
   };
   res.render("register", templateVars);
@@ -93,26 +98,44 @@ app.post("/register", (req, res) => {
   
 });
 
-//-------------LOGIN---------
+//-----------LOGIN----------------
 app.get("/login", (req, res) => {
+  const userObject = getUserFromEmail(req.cookies["user_id"]);
   // let email = req.body.username;
   // let userId = getUserFromEmail(email).id;
   // res.cookie("user_id", userId);
   const templateVars = {
-    user: null
+    user: userObject
+    //null
   };
   res.render("login", templateVars);
   // console.log("user",req.body)
 });
 
+//-----------LOGIN END POINT----------
 app.post("/login", (req, res) => {
-  const templateVars = {
-    user: users[req.cookies["user_id"]]
-    // username: req.cookies["username"]
-  };
-  res.redirect("");
-});
+  // const templateVars = {
+  //   user: users[req.cookies["user_id"]]
+  //   // username: req.cookies["username"]
+  // };
 
+  const email = req.body.email;
+  const password = req.body.password;
+
+  for (let userId in users) {
+    console.log(userId);
+    console.log("email",email, users[userId].email);
+    //checking the email and password in the same userObject to see if both are correct
+    if (users[userId].email === email && users[userId].password === password) {
+      res.cookie("user_id", email);
+      res.redirect("/urls");
+      return;
+    }
+  }
+  //would not return this msg if the user enter correct password and username pair
+  res.status(403).send('Please enter a valid Username or Password');
+  return;
+});
 
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
@@ -120,9 +143,10 @@ app.post("/logout", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
+  const userObject = getUserFromEmail(req.cookies["user_id"]);
   const templateVars = {
     urls: urlDatabase,
-    user: users[req.cookies["user_id"]]
+    user: userObject
     // username: req.cookies["username"]
   };
   res.render("urls_new", templateVars);
@@ -141,10 +165,11 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
+  const userObject = getUserFromEmail(req.cookies["user_id"]);
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    user: users[req.cookies["user_id"]]
+    user: userObject
     //username: req.cookies["username"]
   };
   res.render("urls_show", templateVars);
@@ -169,10 +194,11 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 });
 
 app.get("/urls/:shortURL/edit", (req, res) => {
+  const userObject = getUserFromEmail(req.cookies["user_id"]);
   const templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL],
-    user: users[req.cookies["user_id"]]
+    user: userObject
     // username: req.cookies["username"]
   };
   res.render("urls_show", templateVars);
@@ -184,9 +210,10 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/hello", (req, res) => {
+  const userObject = getUserFromEmail(req.cookies["user_id"]);
   const templateVars = {
     greeting: 'Hello World!',
-    user: users[req.cookies["user_id"]]
+    user: userObject
     // username: req.cookies["username"]
   };
   res.render("hello_world", templateVars);
