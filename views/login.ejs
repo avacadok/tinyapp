@@ -6,16 +6,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+ <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 
-  <title>Register</title>
+  <title>Login</title>
 </head>
-<body>
+<body>  
   <%- include('partials/_header'); %>
+  <h2 style="margin-top: 20px; margin-left: 24px; margin-bottom: 0px;">Login</h2>
   
-  <h2 style="margin-top: 20px; margin-left: 24px; margin-bottom: 0px;">Create Account</h2>
-  
-      <form method="POST" action="/register" style="margin-left: 24px;">    
+      <form method="POST" action="/login" style="margin-left: 24px;">    
         <div class="form-group">
           <label for="email">Email address</label>
           <br>
@@ -28,7 +27,7 @@
           <input type="password" name="password" placeholder="Password">
         </div>
 
-        <button type="submit" class="btn btn-primary">Register</button>
+        <button type="submit" class="btn btn-primary">Login</button>
       </form>
 
   

@@ -93,13 +93,26 @@ app.post("/register", (req, res) => {
   
 });
 
-app.post("/login", (req, res) => {
-  let email = req.body.username;
-  let userId = getUserFromEmail(email).id;
-  res.cookie("user_id", userId);
-  res.redirect("/urls");
+//-------------LOGIN---------
+app.get("/login", (req, res) => {
+  // let email = req.body.username;
+  // let userId = getUserFromEmail(email).id;
+  // res.cookie("user_id", userId);
+  const templateVars = {
+    user: null
+  };
+  res.render("login", templateVars);
   // console.log("user",req.body)
 });
+
+app.post("/login", (req, res) => {
+  const templateVars = {
+    user: users[req.cookies["user_id"]]
+    // username: req.cookies["username"]
+  };
+  res.redirect("");
+});
+
 
 app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
@@ -197,4 +210,3 @@ function generateRandomString() {
   }
   return output;
 }
-
