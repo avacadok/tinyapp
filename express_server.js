@@ -56,10 +56,24 @@ app.get("/urls", (req, res) => {
     urls: urlDatabase,
     user: userObject
   };
-  console.log(templateVars);
-  console.log(req.cookies);
-  //para1 will be the ejs file inside the string, para2 has to be an obejct
-  res.render("urls_index", templateVars);
+  if (templateVars.user) {
+    res.render("urls_index", templateVars);
+  } else {
+    res.status(401);
+    res.render("notLogin", {message: "Please login to see shortened URL!", user: null});
+  }
+  
+});
+
+app.post("/urls", (req, res) => {
+  // Log the POST request body to the console
+  console.log(req.body.longURL);
+  let shortURL = generateRandomString();
+  //assign the new key-value pair;
+  urlDatabase[shortURL] = {longURL:req.body.longURL, userID: req.cookies["user_id"]};
+  res.redirect(`urls/${shortURL}`);
+  //res.send("Ok");
+  // Respond with 'Ok' (we will replace this)
 });
 
 //--------REGISTRATION--------------
@@ -83,13 +97,13 @@ app.post("/register", (req, res) => {
   for (let userId in users) {
     console.log("user", users[userId].email);
     if (users[userId].email === newEmail) {
-      res.status(400).send('Email is already taken, please login with your email.');
+      res.status(401).send('Email is already taken, please login with your email.');
       return;
     }
   }
 
   if (newPassword === "" || newEmail === "") {
-    res.status(400).send("Please enter valid email and password");
+    res.status(401).send("Please enter valid email and password");
     return;
   }
 
@@ -157,7 +171,6 @@ app.get("/urls/new", (req, res) => {
     // username: req.cookies["username"]
   };
 
-  //******need to check if its done correctly*****
   if (templateVars.user) {
     res.render("urls_new", templateVars);
   } else {
@@ -165,18 +178,6 @@ app.get("/urls/new", (req, res) => {
     res.render("error", {message: "Please login in order to create new URL!", user: null});
   }
   
-});
-
-
-app.post("/urls", (req, res) => {
-  // Log the POST request body to the console
-  console.log(req.body.longURL);
-  let shortURL = generateRandomString();
-  //assign the new key-value pair;
-  urlDatabase[shortURL] = {longURL:req.body.longURL, userID: req.cookies["user_id"]};
-  res.redirect(`urls/${shortURL}`);
-  //res.send("Ok");
-  // Respond with 'Ok' (we will replace this)
 });
 
 app.get("/urls/:shortURL", (req, res) => {
