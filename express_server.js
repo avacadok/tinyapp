@@ -149,7 +149,13 @@ app.get("/urls/new", (req, res) => {
     user: userObject
     // username: req.cookies["username"]
   };
-  res.render("urls_new", templateVars);
+
+  if (templateVars.user) {
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/urls/")
+  }
+  
 });
 
 app.post("/urls", (req, res) => {
