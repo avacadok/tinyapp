@@ -29,17 +29,23 @@
                 <button class="btn btn-outline-dark" type="submit">Logout</button>
               </form>  
             <% } else {%>
+                <div class="navbar-nav">
+                  <a class="nav-item nav-link" href="/login">Login</a>
+                  <a class="nav-item nav-link" href="/register">Register</a>
+                </div>
 
-       <div>
-        <form method="GET" action="/login">
+
+       <!--<div>
+         <form method="GET" action="/login">
           <button type="submit" class="btn btn-outline-dark">Login</button>
-        </form>
+        </form> 
+       
       </div>
       <div>
         <form method="GET" action="/register">
           <button type="submit" class="btn btn-outline-dark">Register</button>
         </form>
-      </div>
+      </div>-->
       <% } %>       
         
       </div>
