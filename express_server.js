@@ -162,7 +162,7 @@ app.get("/urls/new", (req, res) => {
     res.render("urls_new", templateVars);
   } else {
     res.status(403);
-    res.render("error", {message: "Please login or register in order to create new URL!", user: null});
+    res.render("error", {message: "Please login in order to create new URL!", user: null});
   }
   
 });
