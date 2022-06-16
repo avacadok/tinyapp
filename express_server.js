@@ -14,8 +14,15 @@ app.use(cookieParser());
 
 //--------ROUTES---------------
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b2xVn2: {
+    longURL: "http://www.lighthouselabs.ca",
+    userID: "Snowie"
+
+  },
+  s9m5xK: {
+    longURL: "http://www.google.com",
+    userID: "Brando"
+  }
 };
 
 //--------USER INFORMATION------
@@ -25,8 +32,8 @@ const users = {
     email: "snowie@gmail.com",
     password: "ilovemymama"
   },
-  "Brandon": {
-    id: "Brandon",
+  "Brando": {
+    id: "Brando",
     email: "brando@gmail.com",
     password: "520ava1314"
   }
@@ -150,21 +157,23 @@ app.get("/urls/new", (req, res) => {
     // username: req.cookies["username"]
   };
 
+  //******need to check if its done correctly*****
   if (templateVars.user) {
     res.render("urls_new", templateVars);
   } else {
-    res.redirect("/urls/")
+    res.status(403);
+    res.render("error", {message: "Please login or register in order to create new URL!", user: null});
   }
   
 });
+
 
 app.post("/urls", (req, res) => {
   // Log the POST request body to the console
   console.log(req.body.longURL);
   let shortURL = generateRandomString();
   //assign the new key-value pair;
-  urlDatabase[shortURL] = req.body.longURL;
-  console.log(urlDatabase);
+  urlDatabase[shortURL] = {longURL:req.body.longURL, userID: req.cookies["user_id"]};
   res.redirect(`urls/${shortURL}`);
   //res.send("Ok");
   // Respond with 'Ok' (we will replace this)
@@ -174,18 +183,26 @@ app.get("/urls/:shortURL", (req, res) => {
   const userObject = getUserFromEmail(req.cookies["user_id"]);
   const templateVars = {
     shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL],
+    longURL: urlDatabase[req.params.shortURL].longURL,
     user: userObject
     //username: req.cookies["username"]
   };
+
   res.render("urls_show", templateVars);
 });
 
 app.get("/u/:shortURL", (req, res) => {
   //match the longURL with the shortURL on the urlDatabase
-  const longURL = urlDatabase[req.params.shortURL];
-  // console.log("longurl",longURL)
+  const urlObject = urlDatabase[req.params.shortURL];
+  if (!urlObject) {
+    res.status(403);
+    // send('Please enter a valid shortURL.');
+    res.render("shortURLError", {message: "Please enter a vaild shortURL!", user: null});
+    return;
+  }
+  const longURL = urlObject.longURL;
   res.redirect(`${longURL}`);
+  
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -195,7 +212,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 app.post("/urls/:shortURL/edit", (req, res) => {
   let shortURL = req.params.shortURL;
-  urlDatabase[shortURL] = req.body.longURL;
+  urlDatabase[shortURL].longURL = req.body.longURL;
   res.redirect("/urls/");
 });
 
