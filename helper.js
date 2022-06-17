@@ -1,13 +1,23 @@
 let getUserByEmail = function(email, usersDatabase) {
   for (let userId in usersDatabase) {
     let user = usersDatabase[userId];
-    console.log("user", user);
     if (email === user.email) {
       return user;
     }
-  } return null;
+  } return undefined;
 };
 
-module.exports = {
-  getUserByEmail
+function generateRandomString() {
+  let output = "";
+  const randomStr = "abcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (let i = 0; i < 6; i++) {
+    output += randomStr.charAt(Math.floor(Math.random() * randomStr.length));
+  }
+  return output;
 }
+
+module.exports = {
+  getUserByEmail,
+  generateRandomString
+};

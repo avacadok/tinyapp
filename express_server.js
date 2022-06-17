@@ -5,7 +5,7 @@ const PORT = 8080;
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
 const bodyParser = require("body-parser");
-const {getUserByEmail} = require("./helper");
+const {getUserByEmail, generateRandomString} = require("./helper");
 
 
 //--------MIDDLEWARE-----------
@@ -154,17 +154,22 @@ app.post("/login", (req, res) => {
   const user = getUserByEmail(email, users);
   console.log("user:", user);
   //check if the passwordMatch return a truly value
-  const isPasswordAMatch = bcrypt.compareSync(password, user.password);
-
-  if (!user || !isPasswordAMatch) {
-    res.status(400).send('Please enter a valid Username or Password');
+  
+  if (!user) {
+    res.status(403).send('Email not found, please register for an account.');
     return;
   }
 
+  const isPasswordAMatch = bcrypt.compareSync(password, user.password);
+
+  if (!isPasswordAMatch) {
+    res.status(400).send('Please enter a valid Username or Password.');
+    return;
+  }
   // res.cookie("user_id", user.id);
   req.session.user_id = user.id;
   res.redirect("/urls");
-
+  
 });
 
 app.post("/logout", (req, res) => {
@@ -224,15 +229,14 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   const userID = req.session.user_id;
   const user = users[userID];
   const url = urlDatabase[req.params.shortURL];
-  console.log("url", url.userID)
-  console.log("user.id", user.id )
+  console.log("url", url.userID);
+  console.log("user.id", user.id);
   if (url.userID === user.id) {
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
   } else {
     res.status(401).send("Unauthorized user.");
   }
-  
   
 });
 
@@ -285,17 +289,8 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
-
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
 
-function generateRandomString() {
-  let output = "";
-  const randomStr = "abcdefghijklmnopqrstuvwxyz0123456789";
 
-  for (let i = 0; i < 6; i++) {
-    output += randomStr.charAt(Math.floor(Math.random() * randomStr.length));
-  }
-  return output;
-}
