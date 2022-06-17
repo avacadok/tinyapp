@@ -43,12 +43,12 @@ const users = {
   "Snowie": {
     id: "Snowie",
     email: "snowie@gmail.com",
-    password: "123"
+    password: "$2a$10$2vkI.HIE6HTduf.UzPYGvO3fDumXVYbA4DcmIOvRIGcExJD8Flufa"
   },
   "Brando": {
     id: "Brando",
     email: "123@gmail.com",
-    password: "123"
+    password: "$2a$10$2vkI.HIE6HTduf.UzPYGvO3fDumXVYbA4DcmIOvRIGcExJD8Flufa"
   }
 };
 
@@ -96,7 +96,6 @@ app.get("/register", (req, res) => {
   res.render("register", templateVars);
 });
 
-
 //--------REGISTRATION END-POINT------
 app.post("/register", (req, res) => {
   const newId = generateRandomString();
@@ -107,7 +106,7 @@ app.post("/register", (req, res) => {
     res.status(401).send("Please enter valid email and password");
     return;
   }
-
+  //convert new password to hashed password;
   const hashedPassword = bcrypt.hashSync(newPassword, 10);
   console.log("newemail", newEmail);
 
@@ -153,6 +152,7 @@ app.post("/login", (req, res) => {
   const password = req.body.password;
 
   const user = getUserFromEmail(email);
+  //check if the passwordMatch return a truly value
   const isPasswordAMatch = bcrypt.compareSync(password, user.password);
 
   if (!user || !isPasswordAMatch) {
