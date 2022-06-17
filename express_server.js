@@ -1,16 +1,15 @@
 const express = require("express");
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8080;
 // const cookieParser = require("cookie-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
 const bodyParser = require("body-parser");
+const {getUserByEmail} = require("./helper");
 
 
 //--------MIDDLEWARE-----------
 app.set("view engine", "ejs");
-
-
 app.use(bodyParser.urlencoded({ extended: true }));
 // app.use(cookieParser());
 app.use(cookieSession({
@@ -24,7 +23,6 @@ const urlDatabase = {
   b2xVn2: {
     longURL: "http://www.lighthouselabs.ca",
     userID: "Snowie"
-
   },
   s9m5xK: {
     longURL: "http://www.google.com",
@@ -57,16 +55,6 @@ const users = {
     email: "123@gmail.com",
     password: "$2a$10$2vkI.HIE6HTduf.UzPYGvO3fDumXVYbA4DcmIOvRIGcExJD8Flufa"
   }
-};
-
-let getUserFromEmail = function(email) {
-  for (let userId in users) {
-    let user = users[userId];
-    console.log("user", user);
-    if (email === user.email) {
-      return user;
-    }
-  } return null;
 };
 
 //--------HOME PAGE-------------
@@ -163,8 +151,8 @@ app.post("/login", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
 
-  const user = getUserFromEmail(email);
-  console.log("user", user);
+  const user = getUserByEmail(email, users);
+  console.log("user:", user);
   //check if the passwordMatch return a truly value
   const isPasswordAMatch = bcrypt.compareSync(password, user.password);
 
@@ -176,7 +164,6 @@ app.post("/login", (req, res) => {
   // res.cookie("user_id", user.id);
   req.session.user_id = user.id;
   res.redirect("/urls");
-
 
 });
 
