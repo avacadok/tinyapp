@@ -3,12 +3,12 @@ const app = express();
 const PORT = 8080; // default port 8080
 const cookieParser = require("cookie-parser");
 
+
 //--------MIDDLEWARE-----------
 app.set("view engine", "ejs");
 
+const bcrypt = require('bcryptjs');
 const bodyParser = require("body-parser");
-const { response } = require("express");
-const { del } = require("request");
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
@@ -102,6 +102,13 @@ app.post("/register", (req, res) => {
   const newId = generateRandomString();
   const newEmail = req.body.email;
   const newPassword = req.body.password;
+
+  if (newPassword === "" || newEmail === "") {
+    res.status(401).send("Please enter valid email and password");
+    return;
+  }
+
+  const hashedPassword = bcrypt.hashSync(newPassword, 10);
   console.log("newemail", newEmail);
 
   for (let userId in users) {
@@ -112,16 +119,12 @@ app.post("/register", (req, res) => {
     }
   }
 
-  if (newPassword === "" || newEmail === "") {
-    res.status(401).send("Please enter valid email and password");
-    return;
-  }
-
   users[newId] = {
     id: newId,
     email: newEmail,
-    password: newPassword
+    password: hashedPassword
   };
+
   console.log(users);
   res.cookie("user_id", newId);
   res.redirect("/urls");
@@ -146,16 +149,13 @@ app.get("/login", (req, res) => {
 
 //-----------LOGIN END POINT----------
 app.post("/login", (req, res) => {
-  // const templateVars = {
-  //   user: users[req.cookies["user_id"]]
-  //   // username: req.cookies["username"]
-  // };
-
   const email = req.body.email;
   const password = req.body.password;
+
   const user = getUserFromEmail(email);
-  console.log("user=", user);
-  if (!user || user.password !== password) {
+  const isPasswordAMatch = bcrypt.compareSync(password, user.password);
+
+  if (!user || !isPasswordAMatch) {
     res.status(400).send('Please enter a valid Username or Password');
     return;
   }
@@ -183,7 +183,7 @@ app.get("/urls/new", (req, res) => {
   if (templateVars.user) {
     res.render("urls_new", templateVars);
   } else {
-    res.status(403);
+    res.status(401);
     res.render("error", { message: "Please login in order to create new URL!", user: null });
   }
 
@@ -219,7 +219,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   const userID = req.cookies["user_id"];
   const user = users[userID];
   const url = urlDatabase[req.params.shortURL];
-  if (url.userID === user) {
+  if (url.userID === user.id) {
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
   }
@@ -232,7 +232,8 @@ app.post("/urls/:shortURL/edit", (req, res) => {
   const user = users[userID];
   const url = urlDatabase[req.params.shortURL];
   console.log("url", url.userID);
-  if (url.userID === user) {
+  console.log("user", user);
+  if (url.userID === user.id) {
     let shortURL = req.params.shortURL;
     urlDatabase[shortURL].longURL = req.body.longURL;
     res.redirect("/urls/");
