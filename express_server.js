@@ -224,11 +224,15 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   const userID = req.session.user_id;
   const user = users[userID];
   const url = urlDatabase[req.params.shortURL];
+  console.log("url", url.userID)
+  console.log("user.id", user.id )
   if (url.userID === user.id) {
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
+  } else {
+    res.status(401).send("Unauthorized user.");
   }
-  res.status(401).send("Unauthorized user.");
+  
   
 });
 
@@ -243,8 +247,10 @@ app.post("/urls/:shortURL/edit", (req, res) => {
     let shortURL = req.params.shortURL;
     urlDatabase[shortURL].longURL = req.body.longURL;
     res.redirect("/urls/");
+  } else {
+    res.status(401).send("Unauthorized user.");
   }
-  res.status(401).send("Unauthorized user.");
+  
 });
 
 app.get("/urls/:shortURL/edit", (req, res) => {
