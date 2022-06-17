@@ -5,8 +5,8 @@ Here is a sneak peek of the shortened URLs on my favourite website! Meow~
 
 ## Final Product
 
-!["screenshot description"](./project%20picture/myURLs.png)
-!["screenshot description"](./project%20picture/creat_shortURLs.png)
+!["screenshot description"](https://github.com/avacadok/tinyapp/blob/master/project%20picture/myURLs.png)
+!["screenshot description"](https://github.com/avacadok/tinyapp/blob/master/project%20picture/creat_shortURLs.png)
 
 ## General Dependencies
 
