@@ -63,7 +63,7 @@ app.get("/urls", (req, res) => {
     res.render("notLogin", {message: "Please Login First!", user: null});
     return;
   }
-  
+  //notes
   const urls = urlsForUser(userID);
 
   const templateVars = { urls, user };
@@ -181,15 +181,26 @@ app.get("/urls/new", (req, res) => {
   }
 
 });
-
+//---fix
 app.get("/urls/:shortURL", (req, res) => {
 
   const userID = req.session.user_id;
   const user = users[userID];
+  if (!user) {
+    return res.status(401).send("Unauthorized. Please login.");
+  }
+
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[shortURL];
+
+  if (longURL.userID !== user.id) {
+    return res.status(401).send("Unauthorized.");
+  }
+  
   const templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL,
-    user
+    shortURL,
+    longURL: longURL.longURL,
+    user,
   };
 
   res.render("urls_show", templateVars);
@@ -212,45 +223,59 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
   const userID = req.session.user_id;
   const user = users[userID];
+
+  if (!user) {
+    return res.status(401).send("Unauthorized. Please login.");
+  }
+
   const url = urlDatabase[req.params.shortURL];
 
-  if (url.userID === user.id) {
-    delete urlDatabase[req.params.shortURL];
-    res.redirect("/urls");
-  } else {
-    res.status(401).send("Unauthorized user.");
+  if (url.userID !== user.id) {
+    return res.status(401).send("Unauthorized. Please login.");
   }
+  
+  delete urlDatabase[req.params.shortURL];
+  res.redirect("/urls");
   
 });
 
 app.post("/urls/:shortURL/edit", (req, res) => {
 
   const userID = req.session.user_id;
-  const user = users[userID];
+  // const user = users[userID];
+  const urls = urlsForUser(userID);
   const shortURL = req.params.shortURL;
   const url = urlDatabase[shortURL];
 
-  if (url.userID === user.id) {
-
+  if (urls) {
     url.longURL = req.body.longURL;
     res.redirect("/urls/");
   } else {
-    res.status(401).send("Unauthorized user.");
+    return res.status(401).send("Unauthorized user.");
   }
   
 });
 
 app.get("/urls/:shortURL/edit", (req, res) => {
-
   const userID = req.session.user_id;
   const user = users[userID];
+
+  if (!user) {
+    return res.status(401).send("Unauthorized. Please login.");
+  }
+
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
+
+  if (longURL.userID !== user.id) {
+    return res.status(401).send("Unauthorized. Please login");
+  }
   const templateVars = {
     shortURL,
-    longURL,
+    longURL: longURL.longURL,
     user
   };
+
   res.render("urls_show", templateVars);
 });
 
