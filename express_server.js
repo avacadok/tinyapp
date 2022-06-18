@@ -63,7 +63,7 @@ app.get("/urls", (req, res) => {
     res.render("notLogin", {message: "Please Login First!", user: null});
     return;
   }
-  //notes
+
   const urls = urlsForUser(userID);
 
   const templateVars = { urls, user };
@@ -115,7 +115,6 @@ app.post("/register", (req, res) => {
   };
 
   req.session.user_id = newId;
-
   res.redirect("/urls");
 
 });
@@ -142,7 +141,6 @@ app.post("/login", (req, res) => {
   
   if (!user) {
     return res.status(403).send('Email not found, please register for an account.');
-
   }
 
   const isPasswordAMatch = bcrypt.compareSync(password, user.password);
@@ -153,7 +151,6 @@ app.post("/login", (req, res) => {
 
   req.session.user_id = user.id;
   res.redirect("/urls");
-  
 });
 
 app.post("/logout", (req, res) => {
@@ -181,7 +178,7 @@ app.get("/urls/new", (req, res) => {
   }
 
 });
-//---fix
+
 app.get("/urls/:shortURL", (req, res) => {
 
   const userID = req.session.user_id;
@@ -194,7 +191,7 @@ app.get("/urls/:shortURL", (req, res) => {
   const longURL = urlDatabase[shortURL];
 
   if (longURL.userID !== user.id) {
-    return res.status(401).send("Unauthorized.");
+    return res.status(401).send("Unauthorized. Please login");
   }
   
   const templateVars = {
